@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-container
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    environment:
+      - API_URL=http://localhost:5000
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-container
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=mysql-container
+      - DB_USER=root
+      - DB_PASSWORD=senha_mysql
+      - DB_DATABASE=clinica
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: senha_mysql
+      MYSQL_DATABASE: clinica
+      MYSQL_USER: root
+      MYSQL_PASSWORD: senha_mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
